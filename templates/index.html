@@ -12,12 +12,13 @@
         </style>
     </head>
     <body>
+        <p>Se petrec chestii</p>
         <ul id="recipes"></ul>
         <div id="recipe"></div>
 
         <script>
-            const API_URL =
-                "https://codecoolfrontendapi.herokuapp.com/recipes/";
+            // const API_URL = "https://codecoolfrontendapi.herokuapp.com/recipes/";
+            const API_URL = "http://localhost:5000/";
 
             async function loadRecipes() {
                 const request = await fetch(API_URL);
