@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Recipe loader</title>
+        <style>
+            #recipes li {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <ul id="recipes"></ul>
+        <div id="recipe"></div>
+
+        <script>
+            const API_URL =
+                "https://codecoolfrontendapi.herokuapp.com/recipes/";
+
+            async function loadRecipes() {
+                const request = await fetch(API_URL);
+                const response = await request.json();
+
+                if (request.ok) {
+                    response.forEach(createRecipeListItem);
+                }
+            }
+
+            function createRecipeListItem(recipe) {
+                const ul = document.querySelector("#recipes");
+                const li = document.createElement("li");
+                li.innerText = `Recipe ${recipe.id} is called "${recipe.name}"`;
+                li.dataset.id = recipe.id;
+
+                li.addEventListener("click", populateRecipe);
+
+                ul.appendChild(li);
+            }
+
+            async function populateRecipe(event) {
+                event.preventDefault();
+                const id = event.target.dataset.id;
+
+                const request = await fetch(API_URL + id);
+                const response = await request.json();
+
+                if (request.ok) {
+                    const recipeContainer = document.querySelector("#recipe");
+                    const recipe = response[0];
+                    const section = document.createElement("section");
+
+                    const title = document.createElement("h1");
+                    title.innerText = recipe.recipe;
+                    section.appendChild(title);
+
+                    const subTitle = document.createElement("h2");
+                    subTitle.innerText = `A recipe by ${recipe.author}`;
+                    section.appendChild(subTitle);
+
+                    const ingreds = document.createElement("ul");
+                    // for (
+                    //     let index = 0;
+                    //     index < recipe.ingredients.length;
+                    //     index++
+                    // ) {
+                    //     const li = document.createElement("li");
+                    //     li.innerHTML = `<strong>${recipe.quantities[index]} ${recipe.units[index]}</strong> ${recipe.ingredients[index]}`;
+                    //     ingreds.appendChild(li);
+                    // }
+                    recipe.ingredients.forEach((el, ix) => {
+                        const li = `<li><strong>${recipe.quantities[ix]} ${recipe.units[ix]}</strong> ${recipe.ingredients[ix]}</li>`;
+                        ingreds.innerHTML += li;
+                    });
+
+                    section.appendChild(ingreds);
+
+                    const recipeText = document.createElement("p");
+                    recipeText.innerText = recipe.description;
+                    section.appendChild(recipeText);
+
+                    recipeContainer.innerHTML = "";
+                    recipeContainer.appendChild(section);
+                }
+            }
+
+            loadRecipes();
+        </script>
+    </body>
+</html>
